@@ -6,7 +6,7 @@ export interface MealType {
   id : number;
   title : string;
   slug : string;
-  image : string;
+  image : string | File ;
   summary : string;
   creator : string;
   creator_email : string;

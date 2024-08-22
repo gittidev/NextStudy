@@ -3,8 +3,13 @@
 import ImagePicker from '@/components/meals/image-picker';
 import classes from './page.module.css';
 import { shareMeal } from '@/lib/actions';
+import MealsFormSubmit from '@/components/meals/meals-form-submit';
+import { useFormState } from 'react-dom';
+
 
 export default function ShareMealPage() {
+  useFormState(shareMeal, {message :  null})
+
 
   return (
     <>
@@ -45,7 +50,7 @@ export default function ShareMealPage() {
           </p>
           <ImagePicker label='Your image' name='image'/>
           <p className={classes.actions}>
-            <button type="submit">Share Meal</button>
+            <MealsFormSubmit/>
           </p>
         </form>
       </main>

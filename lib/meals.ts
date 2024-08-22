@@ -30,21 +30,39 @@ export function getMeal(slug: string) {
 }
 
 
+
 export async function saveMeal(meal: MealType) {
-    //slugify를 사용하여 해당 값을 slug로 변환해주고, 모두 소문자로 전환해준다,
-    meal.slug = slugify(meal.title, {lower:true});
-    // meal의 instructions는 dangerouslyHTML을 사용하여 직접적으로 조작되었으므로, 해당 부분의 데이터가 xss에 노출되었는지 검증이 필요함
-    //이를 위하여 xss 라이브러리 활용, 검증된 값을 meal에 배정
+    // slugify를 사용하여 slug로 변환하고 소문자로 전환
+    meal.slug = slugify(meal.title, { lower: true });
+
+    // xss 라이브러리를 사용하여 instructions 필드를 검증
     meal.instructions = xss(meal.instructions);
 
+    // 이미지 처리
+    let fileName = '';
+    if (typeof meal.image === 'string') {
+        // 문자열일 경우 (Base64 또는 URL)
+        if (meal.image.startsWith('data:image')) {
+            // Base64 데이터 URL로 시작하는 경우 (data:image/jpeg;base64,...)
+            const base64Data = meal.image.split(',')[1]; // Base64 데이터 추출
+            const extension = meal.image.split(';')[0].split('/')[1]; // 확장자 추출
+            fileName = `${meal.slug}.${extension}`;
 
-    const extention = meal.image.split('.').pop();
-    //public 디렉토리에 들어갈 fileName을 지정
-    const fileName = `${meal.slug}.${extention}`
+            const buffer = Buffer.from(base64Data, 'base64');
+            fs.writeFileSync(`public/images/${fileName}`, buffer);
+        } else {
+            // URL로 처리 (저장하지 않고 URL을 그대로 사용)
+            fileName = meal.image;
+        }
+    } else if (meal.image instanceof ArrayBuffer) {
+        // ArrayBuffer일 경우 파일로 저장
+        const extension = 'jpeg'; // 기본 확장자 설정 (필요시 조정)
+        fileName = `${meal.slug}.${extension}`;
 
-    const stream = fs.createWriteStream(`public/images/${fileName}`)
-    const buffredImage = await meal.image.arrayBuffer()
+        const stream = fs.createWriteStream(`public/images/${fileName}`);
+        stream.write(Buffer.from(meal.image));
+        stream.end();
+    }
 
-    stream.write(Buffer.from(buffredImage))
-
+    console.log(`Image saved as or referenced by ${fileName}`);
 }

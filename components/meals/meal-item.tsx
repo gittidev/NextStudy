@@ -1,23 +1,28 @@
 import Link from 'next/link';
 import Image from 'next/image';
-
 import classes from './meal-item.module.css';
+import { MealType } from './meals-grid';
 
-interface MealItemProps {
-  title: string;
-  slug: string;
-  image: string;
-  summary: string;
-  creator: string;
-}
+export default function MealItem({
+  id,
+  title,
+  slug,
+  image,
+  summary,
+  creator,
+  creator_email,
+  instructions,
+}: MealType) {
 
-export default function MealItem({ title, slug, image, summary, creator }: MealItemProps) {
+  // 이미지 URL 처리
+  const imageSrc = typeof image === 'string' ? image : URL.createObjectURL(image);
+
   return (
     <article className={classes.meal}>
       <header>
         <div className={classes.image}>
           {/* 이미지 사이즈를 알지 못할때 대안 fill */}
-          <Image src={image} alt={title} fill />
+          <Image src={imageSrc} alt={title} fill />
         </div>
         <div className={classes.headerText}>
           <h2>{title}</h2>

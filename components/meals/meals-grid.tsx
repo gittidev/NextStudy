@@ -1,17 +1,26 @@
 import classses from './meals-grid.module.css'
+import MealItem from './meal-item';
 
-interface Meal {
-  id : string;
+
+export interface MealType {
+  id : number;
+  title : string;
+  slug : string;
+  image : string;
+  summary : string;
+  creator : string;
+  creator_email : string;
+  instructions : string;
 }
 
-interface MealsGridProps {
-  meals :  Meal[]
+export interface MealsGridProps {
+  meals :  MealType[]
 }
 
 export default function MealsGrid({meals}:MealsGridProps) {
   return <ul className={classses.meals }>
     {meals.map((meal) => <li key={meal.id}>
-
+        <MealItem {...meal}/>
     </li>)}
 
   </ul>
